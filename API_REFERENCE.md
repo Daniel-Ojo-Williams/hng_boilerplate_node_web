@@ -54,6 +54,3 @@
 }
 ```
 
-## Versioning
-
-This API is versioned to ensure backward compatibility and easy maintenance. The current version is [version].
