@@ -69,8 +69,136 @@ paths:
                   message:
                     type: string
                     example: Account with the provided email already exists
-        
-    
+  /auth/verify/{token}:
+    post:
+      tags:
+        - Authentication
+      summary: Verify a user's email
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+          description: The token sent to the user's email
+      responses:
+        '200':
+          description: Email verified successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Email verified successfully
+        '422':
+          description: Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Invalid token provided       
+  /api/auth/google:
+    post:
+      tags:
+        - Authentication
+      summary: Logs a user in using google
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  example: google_token
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  message:
+                    type: string
+        '422':
+          description: 'Missing fields'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: One or more required is fileds missing
+        '401':
+          description: 'Unauthorised'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Invalid credential provided
+  /api/auth/magic-line:
+    post:
+      tags:
+        - Authentication
+      summary: Logs a user in using magic link
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: 
+                token:
+                  type: string
+                  example: magic_token
+      responses:  
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  message:
+                    type: string
+        '422':
+          description: 'Missing fields'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: One or more required is fileds missing
+        '401':
+          description: 'Unauthorised'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Invalid credential provided
   /auth/login:
     post:
       tags:
@@ -299,8 +427,906 @@ paths:
       responses:
         '200':
           description: Success
-      
+  /api/organisation/{organisationId}
+    delete:
+      tags:
+        - Organisation
+      security:
+        - bearerAuth: []
+      summary: Delete organisation
+      description: Deletes an organisation a user created
+      parameters:
+        - in: path
+          name: organisationId
+          required: true
+          schema:
+            type: string
+          description: The id of the organisation to be deleted
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Organisation deleted successfully
+  /api/organisation/{organisationId}/users/{userId}:
+    post:
+      tags:
+        - Organisation
+      security:
+        - bearerAuth: []
+      summary: Add user to organisation
+      description: Adds a user to an organisation
+      parameters:
+        - in: path
+          name: organisationId
+          required: true
+          schema:
+            type: string
+          description: The id of the organisation
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          description: The id of the user to be added
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User added successfully
+  /api/users/{userId}/organisations:
+    get:
+      tags:
+        - Organisation
+      summary: Get all organisations a user is part of
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          description: The id of the user
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Fetched organisations successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: Impala golden
+                        description:
+                          type: string
+                          example: Resurrecting faith in mankind
+                        creator:
+                          type: boolean
+                          example: false
+  /api/notification:
+    post: 
+      tags:
+        - Notification
+      summary: Send notification
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: New message
+                message:
+                  type: string
+                  example: You have a new message
+                user_id:
+                  type: string
+                  example: 1
+      responses:
+        '200':
+          description: Notification sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Notification sent successfully
+        '422':
+          description: Missing fields
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: One or more required is fileds missing
+        '401':
+          description: 'Unauthorised'
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Invalid credential provided
+  /api/notifications/{notificationId}:
+    delete:
+      tags:
+        - Notification
+      security:
+        - bearerAuth: []
+      summary: Delete notification
+      parameters:
+        - in: path
+          name: notificationId
+          required: true
+          schema:
+            type: string
+          description: The id of the notification to be deleted
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Notification deleted successfully
+  /api/notifications/{notificationId}/seen
+    patch:
+      tags:
+        - Notification
+      security:
+        - bearerAuth: []
+      summary: Mark notification as seen
+      parameters:
+        - in: path
+          name: notificationId
+          required: true
+          schema:
+            type: string
+          description: The id of the notification to be marked as seen
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Notification marked as seen
+  /api/email-templates:
+    post:
+      tags:
+        - Email
+      summary: Create email template
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Welcome email
+                subject:
+                  type: string
+                  example: Welcome to our platform
+                message:
+                  type: string
+                  example: Welcome to our platform. We are glad to have you here
+      responses:
+        '201':
+          description: Email template created successfully
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Email template created successfully
+        '422':
+          description: Missing fields
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: One or more required is fileds missing
+        '401':
+          description: 'Unauthorised'
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Invalid credential provided
+  /api/email-templates/{templateId}:
+    delete:
+      tags:
+        - Email
+      security:
+        - bearerAuth: []
+      summary: Delete email template
+      parameters:
+        - in: path
+          name: templateId
+          required: true
+          schema:
+            type: string
+          description: The id of the email template to be deleted
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Email template deleted successfully
+  /api/email-templates/{templateId}:
+    patch:
+      tags:
+        - Email
+      security:
+        - bearerAuth: []
+      summary: Update email template
+      parameters:
+        - in: path
+          name: templateId
+          required: true
+          schema:
+            type: string
+          description: The id of the email template to be updated
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Welcome email
+                subject:
+                  type: string
+                  example: Welcome to our platform
+                message:
+                  type: string
+                  example: Welcome to our platform. We are glad to have you here
+      responses:
+        '200':
+          description: Success
+  /api/email-templates:
+    get:
+      tags:
+        - Email
+      summary: Get all email templates
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Fetched email templates successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: Welcome email
+                        subject:
+                          type: string
+                          example: Welcome to our platform
+                        message:
+                          type: string
+                          example: Welcome to our platform. We are glad to have you here
+  /api/email-templates/{templateId}:
+    get:
+      tags:
+        - Email
+      summary: Get email template
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: templateId
+          required: true
+          schema:
+            type: string
+          description: The id of the email template to be fetched
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Fetched email template successfully
+                  data:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: Welcome email
+                      subject:
+                        type: string
+                        example: Welcome to our platform
+                      message:
+                        type: string
+                        example: Welcome to our platform. We are glad to have you here
+  /api/blogs:
+    post:
+      tags:
+        - Blog
+      summary: Create blog
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: How to make a blog
+                content:
+                  type: string
+                  example: This is how you make a blog
+              required:
+                - title
+                - content
+      responses:
+        '201':
+          description: Blog created successfully
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Blog created successfully
+        '422':
+          description: Missing fields
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: One or more required is fileds missing
+        '401':
+          description: 'Unauthorised'
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Invalid credential provided
+  /api/blogs:
+    get:
+      tags:
+        - Blog
+      summary: Get all blogs
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Fetched blogs successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                          example: How to make a blog
+                        content:
+                          type: string
+                          example: This is how you make a blog
+  /api/blogs/{blogId}:
+    get:
+      tags:
+        - Blog
+      summary: Get blog
+      parameters:
+        - in: path
+          name: blogId
+          required: true
+          schema:
+            type: string
+          description: The id of the blog to be fetched
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Fetched blog successfully
+                  data:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                        example: How to make a blog
+                      content:
+                        type: string
+                        example: This is how you make a blog
+  /api/blogs/{blogId}:
+    patch:
+      tags:
+        - Blog
+      security:
+        - bearerAuth: []
+      summary: Update blog
+      parameters:
+        - in: path
+          name: blogId
+          required: true
+          schema:
+            type: string
+          description: The id of the blog to be updated
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: How to make a blog
+                content:
+                  type: string
+                  example: This is how you make a blog
+      responses:
+        '200':
+          description: Success
+  /api/blogs/{blogId}:
+    delete: 
+      tags:
+        - Blog
+      security:
+        - bearerAuth: []
+      summary: Delete blog
+      parameters:
+        - in: path
+          name: blogId
+          required: true
+          schema:
+            type: string
+          description: The id of the blog to be deleted
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Blog deleted successfully
+  /api/email/send:
+    post:
+      tags:
+        - Email
+      summary: Send email
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                to:
+                  type: string
+                  example:    
+                subject: 
+                  type: string
+                  example:
+                message:
+                  type: string
+                  example:
+      responses:
+        '200':
+          description: Email sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Email sent successfully
+        '422':
+          description: Missing fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: One or more required is fileds missing
+        '401':
+          description: 'Unauthorised'
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Invalid credential provided
+  /api/payments/stripe:
+    post:
+      tags:
+        - Payments
+      summary: Make payment using stripe
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  example: 1000
+                currency:
+                  type: string
+                  example: usd
+                description:
+                  type: string
+                  example: Payment for a new car
+                source:
+                  type: string
+                  example: tok_visa
+      responses:
+        '200':
+          description: Payment successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Payment successful
+        '422':
+          description: Missing fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: One or more required is fileds missing
+        '401':
+          description: 'Unauthorised'
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Invalid credential provided
+  /api/payments/flutterwave:
+    post:
+      tags:
+        - Payments
+      summary: Make payment using flutterwave
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  example: 1000
+                currency:
+                  type: string
+                  example: usd
+                description:
+                  type: string
+                  example: Payment for a new car
+                source:
+                  type: string
+                  example: tok_visa
+      responses:
+        '200':
+          description: Payment successful
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Payment successful
+        '422':
+          description: Missing fields
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: One or more required is fileds missing
+        '401':
+          description: 'Unauthorised'
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Invalid credential provided
+  /api/payments/lemonsqueezy:
+    post:
+      tags:
+        - Payments
+      summary: Make payment using lemonsqueezy
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  example: 1000
+                currency:
+                  type: string
+                  example: usd
+                description:
+                  type: string
+                  example: Payment for a new car
+                source:
+                  type: string
+                  example: tok_visa
+      responses:
+        '200':
+          description: Payment successful
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Payment successful
+        '422':
+          description: Missing fields
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: One or more required is fileds missing
+        '401':
+          description: 'Unauthorised'
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Invalid credential provided
 
+  /api/content:
+    post:
+      tags:
+        - Uploads
+      summary: Upload file
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: File uploaded successfully
+        '422':
+          description: Missing fields
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: One or more required is fileds missing
+        '401':
+          description: 'Unauthorised'
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Invalid credential provided
+  /api/content/{fileId}:
+    get:
+      tags:
+        - Uploads
+      summary: Get file
+      parameters:
+        - in: path
+          name: fileId
+          required: true
+          schema:
+            type: string
+          description: The id of the file to be fetched
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Fetched file successfully
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                        example: https://example.com/file
+  /api/content/{fileId}:
+    delete:
+      tags:
+        - Uploads
+      summary: Delete file
+      parameters:
+        - in: path
+          name: fileId
+          required: true
+          schema:
+            type: string
+          description: The id of the file to be deleted
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: File deleted successfully
+  /api/content:
+    get:
+      tags:
+        - Uploads
+      summary: Get all files
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object:
+                properties:
+                  message:
+                    type: string
+                    example: Fetched files successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        url:
+                          type: string
+                          example: https://example.com/file
 components:
   securitySchemes:
     bearerAuth:
