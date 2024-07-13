@@ -290,38 +290,7 @@ paths:
                     type: string
                     example: Incorrect password entered
   
-  /api/profile:
-    get:
-      tags:
-        - Account management
-      summary: User profile
-      security:
-        - bearerAuth: []
-      description: This endpoint returns the details of the currently logged in user
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    properties:
-                      first_name:
-                        type: string
-                      last_name:
-                        type: string
-                      email:
-                        type: string
-                      address:
-                        type: string
-                      phone:
-                        type: string
-  
+
   /api/organisation:
     post:
       tags:

@@ -110,6 +110,7 @@ API endpoints for stage 2 task
   "message": "Invalid credentials provided"
 }
 ```
+
 ### Confirm token
 
 #### Confirm token on registration
@@ -466,48 +467,43 @@ API endpoints for stage 2 task
 
 ### Users  
 
-#### Create User  
-- **Endpoint:** /api/v1/users  
-- **Method:** POST  
-- **Description:** Create a new user.  
+#### User Profile
 
-**Body:**  
+- **Endpoint:** /api/profile
+- **Method:** GET
+- **Description:** This endpoint returns the details of the currently logged in user.
 
-```json 
-{
-  "username": "username",
-  "email": "email",
-  "password": "password"
-}
-```
+**Success Response:**
 
-**Success Response:**  
+- **Code:** 200
+- **Content:**
 
-- **Code:** 201  
-- **Content:**  
 
 ```json
 {
   "status": true,
-  "message": "User created successfully",
+  "message": "User details retrieved successfully",
   "data": {
-    "user_id": "user_id"
+    "first_name": "user_first_name",
+    "last_name": "user_last_name",
+    "email": "user_email",
+    "address": "user_address",
+    "phone": "user_phone"
   }
 }
 ```
 
-**Error Responses:**  
+**Error Responses:**
 
-- **Code:** 400  
-- **Content:**  
+- **Code:** 404
+- **Content:**
 
 ```json
 {
   "status": false,
-  "message": "Error message"
+  "message": "User not found"
 }
 ```
-
 #### Read User  
 
 - **Endpoint:** /api/v1/users/{userId}  
@@ -1252,6 +1248,104 @@ API endpoints for stage 2 task
 {
   "status": false,
   "message": "Blog page not found"
+}
+```
+
+### Content
+
+#### Upload Content
+
+- **Endpoint:** /api/content
+- **Method:** POST
+- **Description:** Upload file. Only accessible by an authorized user.
+
+**Success Response:**
+
+- **Code:** 200
+- **Content:** 
+
+```json
+{
+  "message": "File uploaded successfully"
+}
+```
+
+**Error Responses:**
+
+- **Code:** 422
+- **Content:**
+
+```json
+{
+  "message": "One or more required fields missing"
+}
+```
+
+- **Code:** 401
+- **Content:**
+
+```json
+{
+  "message": "Invalid credential provided"
+}
+```
+
+#### Get File
+
+- **Endpoint:** /api/content/{fileId}
+- **Method:** GET
+- **Description:** Get file by ID. Only accessible by an authorized user.
+
+**Success Response:**
+
+- **Code:** 200
+- **Content:**
+
+
+```json
+{
+  "message": "Fetched file successfully",
+  "data": {
+    "url": "https://example.com/file"
+  }
+}
+```
+#### Delete File
+
+- **Endpoint:** /api/content/{fileId}
+- **Method:** DELETE
+- **Description:** Delete file by ID. Only accessible by an authorized user.
+
+**Success Response:**
+
+**Code:** 200
+**Content:**
+
+```json
+{
+  "message": "File deleted successfully"
+}
+```
+
+#### Get All Files
+
+- **Endpoint:** /api/content
+- **Method:** GET
+- **Description:** Get all files. Only accessible by an authorized user.
+
+**Success Response:**
+
+- **Code:** 200
+- **Content:**
+
+```json
+{
+  "message": "Fetched files successfully",
+  "data": [
+    {
+      "url": "https://example.com/file"
+    }
+  ]
 }
 ```
 
